@@ -64,66 +64,93 @@ public class VirtualMachine {
    * @param bytecode to execute
    */
   public void execute(int[] bytecode) {
-    for (var i = 0; i < bytecode.length; i++) {
-      Instruction instruction = Instruction.getInstruction(bytecode[i]);
+    int i = 0;
+    while (i < bytecode.length) {
+      int instructionValue = bytecode[i];
+      Instruction instruction = Instruction.getInstruction(instructionValue);
+
       switch (instruction) {
         case LITERAL:
-          // Read the next byte from the bytecode.
           int value = bytecode[++i];
-          // Push the next value to stack
           stack.push(value);
           break;
         case SET_AGILITY:
-          var amount = stack.pop();
-          var wizard = stack.pop();
-          setAgility(wizard, amount);
-          break;
         case SET_WISDOM:
-          amount = stack.pop();
-          wizard = stack.pop();
-          setWisdom(wizard, amount);
-          break;
         case SET_HEALTH:
-          amount = stack.pop();
-          wizard = stack.pop();
-          setHealth(wizard, amount);
+          handleSetAttribute(instruction, stack.pop(), stack.pop());
           break;
         case GET_HEALTH:
-          wizard = stack.pop();
-          stack.push(getHealth(wizard));
-          break;
         case GET_AGILITY:
-          wizard = stack.pop();
-          stack.push(getAgility(wizard));
-          break;
         case GET_WISDOM:
-          wizard = stack.pop();
-          stack.push(getWisdom(wizard));
+          handleGetAttribute(instruction, stack.pop());
           break;
         case ADD:
-          var a = stack.pop();
-          var b = stack.pop();
-          stack.push(a + b);
-          break;
         case DIVIDE:
-          a = stack.pop();
-          b = stack.pop();
-          stack.push(b / a);
+          handleMathOperation(instruction, stack.pop(), stack.pop());
           break;
         case PLAY_SOUND:
-          wizard = stack.pop();
-          getWizards()[wizard].playSound();
-          break;
         case SPAWN_PARTICLES:
-          wizard = stack.pop();
-          getWizards()[wizard].spawnParticles();
+          handleWizardAction(instruction, stack.pop());
           break;
         default:
           throw new IllegalArgumentException("Invalid instruction value");
       }
+
       LOGGER.info("Executed " + instruction.name() + ", Stack contains " + getStack());
+      i++;
     }
   }
+
+  private void handleSetAttribute(Instruction instruction, int amount, int wizard) {
+    switch (instruction) {
+      case SET_HEALTH:
+        wizards[wizard].setHealth(amount);
+        break;
+      case SET_WISDOM:
+        wizards[wizard].setWisdom(amount);
+        break;
+      case SET_AGILITY:
+        wizards[wizard].setAgility(amount);
+        break;
+    }
+  }
+
+  private void handleGetAttribute(Instruction instruction, int wizard) {
+    switch (instruction) {
+      case GET_HEALTH:
+        stack.push(wizards[wizard].getHealth());
+        break;
+      case GET_WISDOM:
+        stack.push(wizards[wizard].getWisdom());
+        break;
+      case GET_AGILITY:
+        stack.push(wizards[wizard].getAgility());
+        break;
+    }
+  }
+
+  private void handleMathOperation(Instruction instruction, int a, int b) {
+    switch (instruction) {
+      case ADD:
+        stack.push(a + b);
+        break;
+      case DIVIDE:
+        stack.push(b / a);
+        break;
+    }
+  }
+
+  private void handleWizardAction(Instruction instruction, int wizard) {
+    switch (instruction) {
+      case PLAY_SOUND:
+        wizards[wizard].playSound();
+        break;
+      case SPAWN_PARTICLES:
+        wizards[wizard].spawnParticles();
+        break;
+    }
+  }
+
 
   public void setHealth(int wizard, int amount) {
     wizards[wizard].setHealth(amount);

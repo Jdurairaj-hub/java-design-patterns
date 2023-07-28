@@ -66,18 +66,17 @@ public class App {
 
     List<ProbableThreat> probableThreats = List.of(trojanArcBomb, rootkit);
 
-    var probabilisticThreatAwareSystem =
-        new SimpleProbabilisticThreatAwareSystem("Sys-1", probableThreats);
+    var system = new SimpleProbabilisticThreatAwareSystem("Sys-1", probableThreats);
 
-    LOGGER.info("Filtering ProbabilisticThreatAwareSystem. Initial : "
-        + probabilisticThreatAwareSystem);
+    LOGGER.info("Filtering ProbabilisticThreatAwareSystem. Initial : " + system);
 
     //Filtering using filterer
-    var filteredThreatAwareSystem = probabilisticThreatAwareSystem.filtered()
-        .by(probableThreat -> Double.compare(probableThreat.probability(), 0.99) == 0);
+    var filteredThreatAwareSystem = system.filtered()
+            .by(probableThreat -> Double.compare(probableThreat.probability(), 0.99) == 0);
 
     LOGGER.info("Filtered by probability = 0.99 : " + filteredThreatAwareSystem);
   }
+
 
   /**
    * Demonstrates how to filter {@link ThreatAwareSystem} based on startingOffset property

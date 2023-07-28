@@ -56,9 +56,8 @@ public class MoneyTransferEvent extends DomainEvent {
    */
   @JsonCreator
   public MoneyTransferEvent(@JsonProperty("sequenceId") long sequenceId,
-      @JsonProperty("createdTime") long createdTime,
-      @JsonProperty("money") BigDecimal money, @JsonProperty("accountNoFrom") int accountNoFrom,
-      @JsonProperty("accountNoTo") int accountNoTo) {
+                            @JsonProperty("createdTime") long createdTime, @JsonProperty("money") BigDecimal money,
+                            @JsonProperty("accountNoFrom") int accountNoFrom, @JsonProperty("accountNoTo") int accountNoTo) {
     super(sequenceId, createdTime, "MoneyTransferEvent");
     this.money = money;
     this.accountNoFrom = accountNoFrom;
@@ -74,4 +73,8 @@ public class MoneyTransferEvent extends DomainEvent {
     accountFrom.handleTransferFromEvent(this);
     accountTo.handleTransferToEvent(this);
   }
+
+
 }
+
+
